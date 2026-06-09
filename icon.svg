@@ -1,23 +1,80 @@
+$ cat /home/user/tickerr_app/icon.svg
+
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#eef1ed"/>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0.06"/>
+    <!-- Background gradient: deep dark -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f1318"/>
+      <stop offset="100%" stop-color="#1a1f2e"/>
     </linearGradient>
-    <linearGradient id="pill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2d7a5e"/>
-      <stop offset="100%" stop-color="#1a5240"/>
+
+    <!-- Neon teal glow filter -->
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Subtle inner glow for the ring -->
+    <filter id="softglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Neon teal gradient for main elements -->
+    <linearGradient id="neon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00ffe0"/>
+      <stop offset="100%" stop-color="#00c8a8"/>
+    </linearGradient>
+
+    <!-- Accent line gradient -->
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00ffe0" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#00ffe0" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#00ffe0" stop-opacity="0"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect x="96" y="176" width="320" height="160" rx="40" fill="url(#pill)"/>
-  <rect x="96" y="176" width="320" height="72" rx="40" fill="#ffffff" fill-opacity="0.10"/>
-  <rect x="126" y="244" width="72" height="24" rx="12" fill="#ffffff" fill-opacity="0.90"/>
-  <rect x="314" y="244" width="72" height="24" rx="12" fill="#ffffff" fill-opacity="0.90"/>
-  <rect x="338" y="220" width="24" height="72" rx="12" fill="#ffffff" fill-opacity="0.90"/>
-  <rect x="249" y="196" width="2" height="120" rx="1" fill="#ffffff" fill-opacity="0.18"/>
-  <circle cx="196" cy="384" r="10" fill="#245f49" fill-opacity="0.35"/>
-  <circle cx="256" cy="384" r="10" fill="#245f49" fill-opacity="0.55"/>
-  <circle cx="316" cy="384" r="10" fill="#245f49" fill-opacity="0.35"/>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+
+  <!-- Subtle grid texture lines (tech feel) -->
+  <line x1="0" y1="170" x2="512" y2="170" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="256" x2="512" y2="256" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="342" x2="512" y2="342" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="170" y1="0" x2="170" y2="512" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="256" y1="0" x2="256" y2="512" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="342" y1="0" x2="342" y2="512" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+
+  <!-- Outer neon ring glow (ambient) -->
+  <circle cx="256" cy="240" r="148" fill="none" stroke="#00ffe0" stroke-width="1.5" stroke-opacity="0.12" filter="url(#softglow)"/>
+
+  <!-- Main circle container -->
+  <circle cx="256" cy="240" r="120" fill="#ffffff" fill-opacity="0.03" stroke="url(#neon)" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- Tally mark group — 4 vertical + 1 diagonal strike -->
+  <!-- 4 vertical ticks -->
+  <g filter="url(#glow)" fill="url(#neon)">
+    <rect x="162" y="192" width="14" height="96" rx="7"/>
+    <rect x="192" y="192" width="14" height="96" rx="7"/>
+    <rect x="222" y="192" width="14" height="96" rx="7"/>
+    <rect x="252" y="192" width="14" height="96" rx="7"/>
+    <!-- Diagonal strike across all 4 -->
+    <rect x="148" y="276" width="140" height="14" rx="7" transform="rotate(-65 148 276)"/>
+  </g>
+
+  <!-- 5th standalone tick (next group, slightly separated, dimmer) -->
+  <rect x="308" y="200" width="14" height="80" rx="7" fill="#00ffe0" fill-opacity="0.35"/>
+
+  <!-- Neon horizontal accent line at bottom -->
+  <rect x="106" y="392" width="300" height="2" rx="1" fill="url(#lineGrad)"/>
+
+  <!-- Tiny brand text -->
+  <text x="256" y="432" text-anchor="middle" font-family="ui-monospace, 'Courier New', monospace" font-size="28" font-weight="700" letter-spacing="8" fill="#00ffe0" fill-opacity="0.55">TICKERR</text>
 </svg>
