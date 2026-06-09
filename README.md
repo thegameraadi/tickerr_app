@@ -1,0 +1,1 @@
+# tickerr_app
