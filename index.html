@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#eef1ed">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Tickerr">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Tickerr</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #eef1ed;
+        --ink: #202522;
+        --muted: #6f7871;
+        --line: #cfd6d0;
+        --button: #fbfdfb;
+        --button-hover: #ffffff;
+        --up: #245f49;
+        --down: #884343;
+        --shadow: 0 18px 40px rgba(34, 40, 36, 0.08);
+        --heavy-shadow: 0 26px 60px rgba(32, 37, 34, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        touch-action: manipulation;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      button {
+        font: inherit;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      input {
+        font: inherit;
+      }
+
+      .save-button {
+        position: fixed;
+        top: 18px;
+        right: 18px;
+        min-width: 78px;
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--button);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 650;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+
+      .save-button:hover,
+      .save-button:focus-visible {
+        background: var(--button-hover);
+      }
+
+      main {
+        width: min(92vw, 420px);
+        display: grid;
+        justify-items: center;
+        gap: 18px;
+      }
+
+      .display {
+        min-width: 104px;
+        padding: 10px 12px 9px;
+        border: 1px solid #bac4bd;
+        border-radius: 8px;
+        background: #f9fbf8;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), var(--shadow);
+        text-align: center;
+      }
+
+      .total {
+        display: block;
+        font-family: "Courier New", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: clamp(24px, 9vw, 36px);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .label {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .controls {
+        display: grid;
+        gap: 16px;
+        justify-items: center;
+      }
+
+      .tick-button {
+        width: clamp(150px, 42vw, 208px);
+        height: clamp(118px, 30vw, 158px);
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
+        box-shadow: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .tick-button:hover,
+      .tick-button:focus-visible {
+        background: transparent;
+        outline: none;
+      }
+
+      .tick-button svg {
+        width: 78%;
+        height: 78%;
+      }
+
+      .tick-button.up {
+        color: var(--up);
+      }
+
+      .tick-button.down {
+        color: var(--down);
+      }
+
+      .history {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 84px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .history h2 {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .history-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .history-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 9px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .history-name {
+        color: var(--ink);
+        font-weight: 650;
+      }
+
+      .history-total {
+        color: var(--ink);
+        font-family: "Courier New", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .empty {
+        margin: 0;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+      }
+
+      dialog {
+        width: min(90vw, 310px);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: #fbfdfb;
+        color: var(--ink);
+        box-shadow: var(--heavy-shadow);
+      }
+
+      dialog::backdrop {
+        background: rgba(32, 37, 34, 0.18);
+      }
+
+      .save-form {
+        display: grid;
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .field input {
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid #bac4bd;
+        border-radius: 8px;
+        padding: 0 10px;
+        background: #ffffff;
+        color: var(--ink);
+        font-size: 14px;
+      }
+
+      .dialog-actions {
+        display: flex;
+        justify-content: end;
+        gap: 8px;
+      }
+
+      .dialog-actions button {
+        min-height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 12px;
+        background: #ffffff;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 650;
+        cursor: pointer;
+      }
+
+      .dialog-actions button[type="submit"] {
+        background: var(--ink);
+        color: #ffffff;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="save-button" id="saveSession" type="button">Save</button>
+
+    <main aria-label="Local ticker">
+      <section class="controls" aria-label="Ticker controls">
+        <button class="tick-button up" id="upTick" type="button" aria-label="Increase total by 1">
+          <svg aria-hidden="true" viewBox="0 0 160 120" fill="none">
+            <path d="M28 86L80 34L132 86" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M47 86L80 53L113 86" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0.42"></path>
+          </svg>
+        </button>
+        <button class="tick-button down" id="downTick" type="button" aria-label="Decrease total by 1">
+          <svg aria-hidden="true" viewBox="0 0 160 120" fill="none">
+            <path d="M28 34L80 86L132 34" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M47 34L80 67L113 34" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0.42"></path>
+          </svg>
+        </button>
+      </section>
+
+      <section class="display" aria-live="polite">
+        <span class="total" id="total">0</span>
+        <div class="label">Total</div>
+      </section>
+
+      <section class="history" aria-label="Saved sessions">
+        <h2>Past sessions</h2>
+        <ul class="history-list" id="historyList"></ul>
+      </section>
+    </main>
+
+    <dialog id="saveDialog" aria-labelledby="saveTitle">
+      <form class="save-form" id="saveForm" method="dialog">
+        <div class="field">
+          <label id="saveTitle" for="fileName">File name</label>
+          <input id="fileName" name="fileName" type="text" autocomplete="off" maxlength="48" placeholder="tick-session" required>
+        </div>
+        <div class="dialog-actions">
+          <button id="cancelSave" type="button">Cancel</button>
+          <button type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script>
+      const currentKey = "localTicker.current";
+      const sessionsKey = "localTicker.sessions";
+      const totalEl = document.querySelector("#total");
+      const historyList = document.querySelector("#historyList");
+      const saveButton = document.querySelector("#saveSession");
+      const saveDialog = document.querySelector("#saveDialog");
+      const saveForm = document.querySelector("#saveForm");
+      const fileNameInput = document.querySelector("#fileName");
+      const cancelSave = document.querySelector("#cancelSave");
+      const upButton = document.querySelector("#upTick");
+      const downButton = document.querySelector("#downTick");
+
+      const loadJson = (key, fallback) => {
+        try {
+          const value = JSON.parse(localStorage.getItem(key));
+          return value ?? fallback;
+        } catch {
+          return fallback;
+        }
+      };
+
+      let current = loadJson(currentKey, { total: 0, up: 0, down: 0, startedAt: new Date().toISOString() });
+      let sessions = loadJson(sessionsKey, []);
+
+      const formatTotal = (value) => {
+        if (value > 0) return `+${value}`;
+        return String(value);
+      };
+
+      const render = () => {
+        totalEl.textContent = formatTotal(current.total);
+        historyList.innerHTML = "";
+
+        if (sessions.length === 0) {
+          const empty = document.createElement("li");
+          empty.className = "empty";
+          empty.textContent = "No saved sessions yet.";
+          historyList.append(empty);
+          return;
+        }
+
+        sessions.slice(0, 5).forEach((session) => {
+          const row = document.createElement("li");
+          row.className = "history-row";
+
+          const detail = document.createElement("span");
+          const name = document.createElement("span");
+          name.className = "history-name";
+          name.textContent = session.name || "tick-session";
+
+          const date = document.createElement("span");
+          date.textContent = ` - ${new Date(session.savedAt).toLocaleString([], {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          })}`;
+          detail.append(name, date);
+
+          const total = document.createElement("span");
+          total.className = "history-total";
+          total.textContent = formatTotal(session.total);
+
+          row.append(detail, total);
+          historyList.append(row);
+        });
+      };
+
+      const persistCurrent = () => {
+        localStorage.setItem(currentKey, JSON.stringify(current));
+      };
+
+      const tick = (direction) => {
+        current.total += direction;
+        if (direction > 0) current.up += 1;
+        if (direction < 0) current.down += 1;
+        persistCurrent();
+        render();
+      };
+
+      const defaultFileName = () => {
+        const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+        return `ticks-${stamp}`;
+      };
+
+      const saveSession = (name) => {
+        const hasTicks = current.up > 0 || current.down > 0;
+        if (!hasTicks) return;
+
+        sessions.unshift({
+          name,
+          total: current.total,
+          up: current.up,
+          down: current.down,
+          startedAt: current.startedAt,
+          savedAt: new Date().toISOString()
+        });
+        sessions = sessions.slice(0, 20);
+        localStorage.setItem(sessionsKey, JSON.stringify(sessions));
+
+        current = { total: 0, up: 0, down: 0, startedAt: new Date().toISOString() };
+        persistCurrent();
+        render();
+      };
+
+      const preventGestureZoom = (event) => {
+        event.preventDefault();
+      };
+
+      upButton.addEventListener("click", () => tick(1));
+      downButton.addEventListener("click", () => tick(-1));
+      [upButton, downButton].forEach((button) => {
+        button.addEventListener("dblclick", preventGestureZoom);
+        button.addEventListener("gesturestart", preventGestureZoom);
+        button.addEventListener("gesturechange", preventGestureZoom);
+      });
+      saveButton.addEventListener("click", () => {
+        const hasTicks = current.up > 0 || current.down > 0;
+        if (!hasTicks) return;
+        fileNameInput.value = defaultFileName();
+        saveDialog.showModal();
+        fileNameInput.select();
+      });
+      cancelSave.addEventListener("click", () => saveDialog.close());
+      saveForm.addEventListener("submit", () => {
+        saveSession(fileNameInput.value.trim() || defaultFileName());
+      });
+
+      render();
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      }
+    </script>
+  </body>
+</html>
